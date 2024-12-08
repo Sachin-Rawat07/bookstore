@@ -5,10 +5,10 @@ const jwt=require("jsonwebtoken")
 const {authenticateToken}=require("./userAuth")
 
 //sign-up
-router.post("/.signup",async(req,res)=>{
+router.post("/sign-up",async(req,res)=>{
     try{
         //take details from the req.body
-        const {username,email,password,address}=req.body;
+        const {username,email,password,address,role}=req.body;
         
         //check username length is more than 3;
         if(username.length<4){
@@ -40,6 +40,7 @@ router.post("/.signup",async(req,res)=>{
             return res.status(400)
                       .json({message:"Password length should be greater than 4"}) 
         }
+        
 
         const hassPass=await bcrypt.hash(password,10)
 
@@ -47,7 +48,8 @@ router.post("/.signup",async(req,res)=>{
             username:username,
             email:email,
             password:hassPass,
-            address:address
+            address:address,
+            role:role
         })
         await newUser.save();
         return res.status(200).json({message:"SignUp Successfully"})
@@ -59,7 +61,7 @@ router.post("/.signup",async(req,res)=>{
 
 
 //sign-in
-router.post("/signin",async(req,res)=>{
+router.post("/sign-in",async(req,res)=>{
     try{
         const {username,password}=req.body;
 
@@ -97,7 +99,7 @@ router.post("/signin",async(req,res)=>{
 
 
 //get-user-information
-router.get("/getUserInfo",authenticateToken,async(req,res)=>{
+router.get("/get-user-info",authenticateToken,async(req,res)=>{
     try{
         const {id}=req.headers;
         const data=await User.findById(id).select("-password");
@@ -110,7 +112,7 @@ router.get("/getUserInfo",authenticateToken,async(req,res)=>{
 })
 
 // update address
-router.put("/updateAddress",authenticateToken,async(req,res)=>{
+router.put("/update-address",authenticateToken,async(req,res)=>{
     try{
         const {id}=req.headers;
         const {address}=req.body;
